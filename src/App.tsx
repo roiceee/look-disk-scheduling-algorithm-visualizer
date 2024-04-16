@@ -51,6 +51,7 @@ function App() {
             required
             placeholder="Enter Head Track Value"
             value={headTrack}
+            min={0}
             onChange={(e) => {
               setHeadTrack(parseInt(e.target.value));
             }}
