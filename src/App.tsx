@@ -31,7 +31,7 @@ function App() {
   });
 
   const runGraph = useCallback(() => {
-    const result = lookDiskScheduling(headTrack, tracks, travelTime);
+    const result = lookDiskScheduling(headTrack, [...tracks], travelTime);
 
     setGraphData(result);
   }, [headTrack, tracks, travelTime, setGraphData]);
