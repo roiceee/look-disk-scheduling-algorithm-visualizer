@@ -1,39 +1,88 @@
-export function lookDiskScheduling(head: number, tracks: number[]): number[] {
-    if (tracks.length === 0) {
-        return [head];
-    }
+export function lookDiskScheduling(
+  head: number,
+  tracks: number[],
+  travelTime: number
+): { tracks: number[]; travelTime: number[] } {
+  if (tracks.length === 0) {
+    return { tracks, travelTime: [0] };
+  }
 
-    tracks.sort((a, b) => a - b);
+  tracks = tracks.sort((a, b) => a - b);
 
-    let splitIndex = tracks.findIndex(track => track > head);
+  const splitIndex = tracks.findIndex((track) => track > head);
 
-    let lowerTracks = tracks.slice(0, splitIndex);
-    let upperTracks = tracks.slice(splitIndex);
+  const lowerTracks = tracks.slice(0, splitIndex);
+  const upperTracks = tracks.slice(splitIndex);
 
-    let result: number[] = [head];
-    if (lowerTracks.length === 0 || (upperTracks.length > 0 && head - lowerTracks[lowerTracks.length - 1] > upperTracks[0] - head)) {
-        result = result.concat(upperTracks.concat(lowerTracks.reverse()));
-    } else {
-        result = result.concat(lowerTracks.reverse().concat(upperTracks));
-    }
 
-    return result;
+  let result: number[] = [head];
+
+  if (upperTracks.length === 0) {
+    result = result.concat(lowerTracks.reverse());
+
+    return {
+      tracks: result,
+      travelTime: getTravelTimes(travelTime, result.length),
+    };
+  }
+
+  if (lowerTracks.length === 0) {
+    result = result.concat(upperTracks);
+
+    return {
+      tracks: result,
+      travelTime: getTravelTimes(travelTime, result.length),
+    };
+  }
+
+  result = result.concat(upperTracks).concat(lowerTracks.reverse());
+
+  return {
+    tracks: result,
+    travelTime: getTravelTimes(travelTime, result.length),
+  };
 }
 
-export function calculateTotalMovementAndTime(travelledTracks: number[], timePerTrack: number): { totalTracksTravelled: number, totalTimeTaken: number } {
-    let totalTracksTravelled = 0;
-    let totalTimeTaken = 0;
+function getTravelTimes(
+  travelTime: number,
+  trackEntriesLength: number
+): number[] {
+  let currentTravelTime = 0;
+  const travelTimes = [];
+  travelTimes.push(currentTravelTime);
+  for (let i = 0; i < trackEntriesLength - 1; i++) {
+    currentTravelTime += travelTime;
+    travelTimes.push(currentTravelTime);
+  }
 
-    for (let i = 0; i < travelledTracks.length-1; i++) {
-        totalTracksTravelled += Math.abs(travelledTracks[i] - travelledTracks[i + 1]);
-    }
-
-    totalTimeTaken = totalTracksTravelled * timePerTrack;
-
-    return { totalTracksTravelled, totalTimeTaken };
+  return travelTimes;
 }
 
-export function calculateAverageSeekTime(travelledTracks: number[], timePerTrack: number): number {
-    let { totalTracksTravelled, totalTimeTaken } = calculateTotalMovementAndTime(travelledTracks, timePerTrack);
-    return totalTimeTaken / (travelledTracks.length-1);
+export function calculateTotalMovementAndTime(
+  travelledTracks: number[],
+  timePerTrack: number
+): { totalTracksTravelled: number; totalTimeTaken: number } {
+  let totalTracksTravelled = 0;
+  let totalTimeTaken = 0;
+
+  for (let i = 0; i < travelledTracks.length - 1; i++) {
+    totalTracksTravelled += Math.abs(
+      travelledTracks[i] - travelledTracks[i + 1]
+    );
+  }
+
+  totalTimeTaken = totalTracksTravelled * timePerTrack;
+
+  return { totalTracksTravelled, totalTimeTaken };
+}
+
+export function calculateAverageSeekTime(
+  travelledTracks: number[],
+  timePerTrack: number
+): number {
+  let { totalTracksTravelled, totalTimeTaken } = calculateTotalMovementAndTime(
+    travelledTracks,
+    timePerTrack
+  );
+  return totalTimeTaken / (travelledTracks.length - 1);
 }
