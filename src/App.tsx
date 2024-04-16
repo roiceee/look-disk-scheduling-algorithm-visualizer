@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import Navbar from "./components/Navbar";
 import { Minus, Plus } from "lucide-react";
+import { lookDiskScheduling, calculateTotalMovementAndTime, calculateAverageSeekTime } from "./services/computation";
 
 function App() {
   const [headTrack, setHeadTrack] = useState<number>(0);
@@ -34,6 +35,16 @@ function App() {
     },
     [tracks]
   );
+
+  //Test Case For Computation
+  // const headPosition: number = 50;
+  // const trackRequests: number[] = [40, 10, 22, 20, 60, 2, 70, 45];
+  // const arrangedTracks: number[] = lookDiskScheduling(headPosition, trackRequests);
+  // const timePerTrack: number = 5; // assuming it takes 5 milliseconds to travel from one track to another
+
+  // console.log(arrangedTracks);
+  // console.log(calculateTotalMovementAndTime(arrangedTracks, timePerTrack));
+  // console.log(calculateAverageSeekTime(arrangedTracks, timePerTrack));
 
   return (
     <main>
