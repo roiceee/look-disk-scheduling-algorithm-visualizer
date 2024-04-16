@@ -39,7 +39,7 @@ function App() {
     <main>
       <Navbar className="mb-8 sm:px-20 lg:px-48" />
 
-      <section className="px-2 sm:px-20 lg:px-48">
+      <section className="px-2 sm:px-24 lg:px-56">
         <label className="form-control w-full max-w-xs">
           <div className="label">
             <span className="label-text">Head Track Value</span>
