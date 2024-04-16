@@ -79,6 +79,7 @@ function App() {
                   />
                   <button
                     className="btn btn-outline btn-sm"
+                    disabled={tracks.length === 1}
                     onClick={() => {
                       handleRemoveTrack(index);
                     }}
