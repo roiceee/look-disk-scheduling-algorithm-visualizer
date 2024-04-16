@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import Navbar from "./components/Navbar";
 import { Minus, Plus } from "lucide-react";
-import { lookDiskScheduling, calculateTotalMovementAndTime, calculateAverageSeekTime } from "./services/computation";
+// import { lookDiskScheduling, calculateTotalMovementAndTime, calculateAverageSeekTime } from "./services/computation";
 
 function App() {
   const [headTrack, setHeadTrack] = useState<number>(0);
