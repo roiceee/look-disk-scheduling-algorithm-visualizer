@@ -31,6 +31,29 @@ function App() {
   });
 
   const runGraph = useCallback(() => {
+
+    if (isNaN(headTrack)) {
+      alert("Please input all fields");
+      return;
+    }
+
+    for (const track of tracks) {
+      if (isNaN(track)) {
+        alert("Please input all fields");
+        return;
+      }
+    }
+
+    if (isNaN(travelTime)) {
+      alert("Please input all fields");
+      return;
+    }
+
+    if (travelTime === 0) {
+      alert("Travel time must not be 0");
+      return;
+    }
+
     const result = lookDiskScheduling(headTrack, [...tracks], travelTime);
 
     setGraphData(result);
@@ -91,7 +114,7 @@ function App() {
             className="h-96 "
             options={{
               indexAxis: "y", // This makes the chart horizontal
-
+              
               scales: {
                 x: {
                   type: "linear",
