@@ -57,32 +57,3 @@ function getTravelTimes(
 
   return travelTimes;
 }
-
-export function calculateTotalMovementAndTime(
-  travelledTracks: number[],
-  timePerTrack: number
-): { totalTracksTravelled: number; totalTimeTaken: number } {
-  let totalTracksTravelled = 0;
-  let totalTimeTaken = 0;
-
-  for (let i = 0; i < travelledTracks.length - 1; i++) {
-    totalTracksTravelled += Math.abs(
-      travelledTracks[i] - travelledTracks[i + 1]
-    );
-  }
-
-  totalTimeTaken = totalTracksTravelled * timePerTrack;
-
-  return { totalTracksTravelled, totalTimeTaken };
-}
-
-export function calculateAverageSeekTime(
-  travelledTracks: number[],
-  timePerTrack: number
-): number {
-  let { totalTracksTravelled, totalTimeTaken } = calculateTotalMovementAndTime(
-    travelledTracks,
-    timePerTrack
-  );
-  return totalTimeTaken / (travelledTracks.length - 1);
-}
