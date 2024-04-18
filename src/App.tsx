@@ -1,5 +1,5 @@
 import { Minus, Plus } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "./components/Navbar";
 import { lookDiskScheduling } from "./services/computation";
 
@@ -30,8 +30,9 @@ function App() {
     travelTime: [],
   });
 
-  const runGraph = useCallback(() => {
+  const inputRefs = useRef<HTMLInputElement[] | null>([]);
 
+  const runGraph = useCallback(() => {
     if (isNaN(headTrack)) {
       alert("Please input all fields");
       return;
@@ -85,6 +86,25 @@ function App() {
     [tracks]
   );
 
+  const tableData = useMemo(() => {
+    const data = [];
+    let tracksTraveled = 0;
+    let avgTracksTraveled = 0;
+    for (let i = 1; i < graphData.tracks.length; i++) {
+      data.push(
+        <tr key={`track-${i}`}>
+          <td>
+            {graphData.tracks[i - 1]} to {graphData.tracks[i]}
+          </td>
+          <td>{Math.abs(graphData.tracks[i - 1] - graphData.tracks[i])}</td>
+        </tr>
+      );
+      tracksTraveled += Math.abs(graphData.tracks[i - 1] - graphData.tracks[i]);
+    }
+    avgTracksTraveled = tracksTraveled / (graphData.tracks.length - 1);
+    return { data, tracksTraveled, avgTracksTraveled };
+  }, [graphData.tracks]);
+
   //Register Elements
   ChartJS.register(
     CategoryScale,
@@ -96,25 +116,31 @@ function App() {
     Legend
   );
 
-  //Test Case For Computation
-  // const headPosition: number = 50;
-  // const trackRequests: number[] = [40, 10, 22, 20, 60, 2, 70, 45];
-  // const result: {
-  //   tracks: number[];
-  //   travelTime: number[];
-  // } = lookDiskScheduling(headPosition, trackRequests, 1);
+  useEffect(() => {
+    if (!inputRefs.current) {
+      return;
+    }
+
+    if (inputRefs.current.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const lastInputRef: any = inputRefs.current[tracks.length - 1];
+      if (lastInputRef) {
+        lastInputRef.focus();
+      }
+    }
+  }, [tracks]);
 
   return (
-    <main>
+    <main className="pb-10">
       <Navbar className="mb-8 sm:px-20 lg:px-48" />
 
-      <div className="flex flex-col lg:flex-row justify-center gap-8 px-2 flex-grow-0">
+      <div className="flex flex-col lg:flex-row justify-center gap-8 px-2 sm:px-32 flex-grow-0">
         <section>
           <Line
             className="h-96 "
             options={{
               indexAxis: "y", // This makes the chart horizontal
-              
+
               scales: {
                 x: {
                   type: "linear",
@@ -156,6 +182,35 @@ function App() {
           />
         </section>
 
+        <section>
+          <section className="max-h-[200px] md:max-h-[500px] overflow-y-auto overflow-x-auto bg-slate-50">
+            {/* create a table for two columns, loop using the length of tracks-1*/}
+            <table className="table w-full text-center mb-2 ">
+              <thead>
+                <tr>
+                  <th>Head Path</th>
+                  <th>Tracks Traveled</th>
+                </tr>
+              </thead>
+              <tbody>{tableData.data}</tbody>
+            </table>
+          </section>
+
+          <section className="text-xs mt-6">
+            <div>
+              <span>
+                Total No. of Tracks: <b>{tableData.tracksTraveled}</b> ms
+              </span>
+            </div>
+            <div>
+              <span>
+                Avg No of Tracks Traveled:{" "}
+                <b>{tableData.avgTracksTraveled.toFixed(2)} ms</b>
+              </span>
+            </div>
+          </section>
+        </section>
+
         <section className="sm:items-center min-w-48">
           <label className="form-control w-full max-w-xs">
             <div className="label">
@@ -179,18 +234,29 @@ function App() {
             <h2 className="font-bold">Tracks</h2>
             <div className="h-64 overflow-y-auto bg-slate-50">
               {tracks.map((track, index) => (
-                <div key={`track-${index}`} className="mt-1">
+                <div key={`track-${index}`} style={{ marginBottom: "6px" }}>
                   <label className="form-control w-full max-w-xs">
                     <div className="label">
                       <span className="label-text">Track {index + 1}</span>
                     </div>
                   </label>
-                  <div className="flex items-center justify-center gap-2 px-2">
+                  <div className="flex items-center justify-center gap-2 px-2 mb-4">
                     <input
                       type="number"
                       min={1}
                       value={track}
                       className="input input-bordered w-full max-w-xs input-sm"
+                      ref={(el) => {
+                        if (el) {
+                          if (inputRefs.current)
+                            inputRefs.current[index] = el as HTMLInputElement;
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleAddTrack();
+                        }
+                      }}
                       onChange={(e) =>
                         handleTrackChange(index, parseInt(e.target.value))
                       }
@@ -236,7 +302,7 @@ function App() {
             </label>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-4 text-center sm:text-left">
             <button
               onClick={runGraph}
               className="btn btn-accent btn-sm btn-wide"
