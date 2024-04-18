@@ -16,9 +16,12 @@ import {
 import { Line } from "react-chartjs-2";
 
 function App() {
-  const [headTrack, setHeadTrack] = useState<number>(50);
+  const maxTrack = 100;
+  const maxTravelTime = 50;
 
-  const [tracks, setTracks] = useState<number[]>([60, 70, 34]);
+  const [headTrack, setHeadTrack] = useState<number>(0);
+
+  const [tracks, setTracks] = useState<number[]>([0]);
 
   const [travelTime, setTravelTime] = useState<number>(1);
 
@@ -61,7 +64,24 @@ function App() {
   }, [headTrack, tracks, travelTime, setGraphData]);
 
   const handleAddTrack = () => {
-    setTracks([...tracks, 0]);
+    const newTracks = [...tracks, 0];
+    setTracks(newTracks);
+    if (!inputRefs.current) {
+      return;
+    }
+
+    setTimeout(() => {
+      // Check if inputRefs is available
+      if (!inputRefs.current) {
+        return;
+      }
+
+      // Set focus to the last input field
+      const lastInputRef = inputRefs.current[newTracks.length - 1];
+      if (lastInputRef) {
+        lastInputRef.focus();
+      }
+    }, 0);
   };
 
   const handleRemoveTrack = useCallback(
@@ -85,6 +105,18 @@ function App() {
     },
     [tracks]
   );
+
+  const generateRandomData = useCallback(() => {
+    const newTracks = Array.from(
+      // 4 to 7
+      { length: Math.floor(Math.random() * 4) + 4 },
+      () => Math.floor(Math.random() * maxTrack)
+    );
+    console.log(newTracks);
+    setTracks(newTracks);
+    setHeadTrack(Math.floor(Math.random() * maxTrack));
+    setTravelTime(Math.floor(Math.random() * maxTravelTime) + 1);
+  }, []);
 
   const tableData = useMemo(() => {
     const data = [];
@@ -117,20 +149,6 @@ function App() {
   );
 
   useEffect(() => {
-    if (!inputRefs.current) {
-      return;
-    }
-
-    if (inputRefs.current.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const lastInputRef: any = inputRefs.current[tracks.length - 1];
-      if (lastInputRef) {
-        lastInputRef.focus();
-      }
-    }
-  }, [tracks]);
-
-  useEffect(() => {
     window.onbeforeunload = function () {
       return true;
     };
@@ -144,10 +162,10 @@ function App() {
     <main className="pb-10">
       <Navbar className="mb-8 sm:px-20 lg:px-48" />
 
-      <div className="flex flex-col lg:flex-row justify-center gap-8 px-2 sm:px-32 flex-grow-0">
+      <div className="flex flex-col xl:flex-row justify-center gap-8 px-2 sm:px-32">
         <section>
           <Line
-            className="h-96 "
+            className="h-96"
             options={{
               indexAxis: "y", // This makes the chart horizontal
 
@@ -221,7 +239,7 @@ function App() {
           </section>
         </section>
 
-        <section className="sm:items-center min-w-48">
+        <section className="sm:items-center min-w-48 mx-auto xl:mx-2">
           <label className="form-control w-full max-w-xs">
             <div className="label">
               <span className="label-text">Head Track Value</span>
@@ -235,6 +253,10 @@ function App() {
               value={headTrack}
               min={0}
               onChange={(e) => {
+                if (parseInt(e.target.value) >= maxTrack) {
+                  setHeadTrack(maxTrack);
+                  return;
+                }
                 setHeadTrack(parseInt(e.target.value));
               }}
             />
@@ -267,9 +289,13 @@ function App() {
                           handleAddTrack();
                         }
                       }}
-                      onChange={(e) =>
-                        handleTrackChange(index, parseInt(e.target.value))
-                      }
+                      onChange={(e) => {
+                        if (parseInt(e.target.value) >= maxTrack) {
+                          handleTrackChange(index, maxTrack);
+                          return;
+                        }
+                        handleTrackChange(index, parseInt(e.target.value));
+                      }}
                     />
                     <button
                       className="btn btn-outline btn-sm"
@@ -306,13 +332,25 @@ function App() {
                 value={travelTime}
                 min={1}
                 onChange={(e) => {
+                  if (parseInt(e.target.value) >= maxTravelTime) {
+                    setTravelTime(maxTravelTime);
+                    return;
+                  }
                   setTravelTime(parseInt(e.target.value));
                 }}
               />
             </label>
           </div>
 
-          <div className="mt-4 text-center sm:text-left">
+          <div className="mt-4 sm:text-left flex flex-col items-center gap-1">
+            <button
+              onClick={() => {
+                generateRandomData();
+              }}
+              className="btn btn-accent btn-sm btn-wide btn-outline"
+            >
+              Generate Random
+            </button>
             <button
               onClick={runGraph}
               className="btn btn-accent btn-sm btn-wide"
