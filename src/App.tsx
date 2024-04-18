@@ -130,6 +130,16 @@ function App() {
     }
   }, [tracks]);
 
+  useEffect(() => {
+    window.onbeforeunload = function () {
+      return true;
+    };
+
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, []);
+
   return (
     <main className="pb-10">
       <Navbar className="mb-8 sm:px-20 lg:px-48" />
@@ -199,7 +209,7 @@ function App() {
           <section className="text-xs mt-6">
             <div>
               <span>
-                Total No. of Tracks: <b>{tableData.tracksTraveled}</b> ms
+                Total No. of Tracks: <b>{tableData.tracksTraveled} ms</b>
               </span>
             </div>
             <div>
