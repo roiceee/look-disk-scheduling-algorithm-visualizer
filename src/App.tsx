@@ -17,7 +17,7 @@ import { Line } from "react-chartjs-2";
 
 function App() {
   const maxTrack = 100;
-  const maxTravelTime = 50;
+  // const maxTravelTime = 50;
 
   const [headTrack, setHeadTrack] = useState<number>(0);
 
@@ -114,7 +114,8 @@ function App() {
     );
     setTracks(newTracks);
     setHeadTrack(Math.floor(Math.random() * maxTrack));
-    setTravelTime(Math.floor(Math.random() * maxTravelTime) + 1);
+    // setTravelTime(Math.floor(Math.random() * maxTravelTime) + 1);
+    setTravelTime(1);
   }, []);
 
   const tableData = useMemo(() => {
@@ -330,13 +331,14 @@ function App() {
                 placeholder="Enter Head Track Value"
                 value={travelTime}
                 min={1}
-                onChange={(e) => {
-                  if (parseInt(e.target.value) >= maxTravelTime) {
-                    setTravelTime(maxTravelTime);
-                    return;
-                  }
-                  setTravelTime(parseInt(e.target.value));
-                }}
+                contentEditable="false"
+                // onChange={(e) => {
+                //   if (parseInt(e.target.value) >= maxTravelTime) {
+                //     setTravelTime(maxTravelTime);
+                //     return;
+                //   }
+                //   setTravelTime(parseInt(e.target.value));
+                // }}
               />
             </label>
           </div>
