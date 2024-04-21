@@ -202,8 +202,15 @@ function App() {
               datasets: [
                 {
                   data: graphData.tracks,
-                  borderColor: "rgb(255, 99, 132)",
-                  backgroundColor: "rgba(255, 99, 132, 0.5)",
+                  borderColor: "rgb(245, 117, 69)",
+                  borderWidth: 2,
+                  fill: true,
+                  borderCapStyle: "round",
+                  backgroundColor: "rgba(245, 117, 69, 0.2)",
+                  pointStyle: "triangle",
+                  pointRadius: 6,
+                  pointHoverRadius: 12,
+                  pointBorderColor: "rgb(245, 117, 69)",
                 },
               ],
             }}
@@ -253,11 +260,16 @@ function App() {
               value={headTrack}
               min={0}
               onChange={(e) => {
-                if (parseInt(e.target.value) >= maxTrack) {
+                const value = parseInt(e.target.value);
+                if (value >= maxTrack) {
                   setHeadTrack(maxTrack);
                   return;
                 }
-                setHeadTrack(parseInt(e.target.value));
+                if (value < 0) {
+                  setHeadTrack(Math.abs(value));
+                  return;
+                }
+                setHeadTrack(value);
               }}
             />
           </label>
@@ -290,11 +302,16 @@ function App() {
                         }
                       }}
                       onChange={(e) => {
-                        if (parseInt(e.target.value) >= maxTrack) {
+                        const value = parseInt(e.target.value);
+                        if (value >= maxTrack) {
                           handleTrackChange(index, maxTrack);
                           return;
                         }
-                        handleTrackChange(index, parseInt(e.target.value));
+                        if (value < 0) {
+                          handleTrackChange(index, Math.abs(value));
+                          return;
+                        }
+                        handleTrackChange(index, value);
                       }}
                     />
                     <button
@@ -348,13 +365,13 @@ function App() {
               onClick={() => {
                 generateRandomData();
               }}
-              className="btn btn-accent btn-sm btn-wide btn-outline"
+              className="btn btn-sm btn-wide "
             >
               Generate Random
             </button>
             <button
               onClick={runGraph}
-              className="btn btn-accent btn-sm btn-wide"
+              className="btn btn-accent btn-sm btn-wide text-white"
             >
               Run Graph
             </button>
