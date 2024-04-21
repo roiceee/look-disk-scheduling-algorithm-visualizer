@@ -348,6 +348,7 @@ function App() {
                 placeholder="Enter Head Track Value"
                 value={travelTime}
                 min={1}
+                disabled
                 contentEditable="false"
                 // onChange={(e) => {
                 //   if (parseInt(e.target.value) >= maxTravelTime) {
