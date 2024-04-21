@@ -112,7 +112,6 @@ function App() {
       { length: Math.floor(Math.random() * 4) + 4 },
       () => Math.floor(Math.random() * maxTrack)
     );
-    console.log(newTracks);
     setTracks(newTracks);
     setHeadTrack(Math.floor(Math.random() * maxTrack));
     setTravelTime(Math.floor(Math.random() * maxTravelTime) + 1);
